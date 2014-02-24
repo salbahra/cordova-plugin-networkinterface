@@ -17,17 +17,13 @@
  under the License.
  */
 
-/* 
- NOTE: plugman/cordova cli should have already installed this,
- but you need the value UIViewControllerBasedStatusBarAppearance
- in your Info.plist as well to set the styles in iOS 7
- */
-
 #import "CDVNetworkInterface.h"
+#import "../Cordova/CDV.h"
+#import "../Cordova/CDVPlugin.h"
 
 @implementation NetworkInterface
 
-- (NSString *)getIPAddress {
+- (NSString *)getIP {
     
     NSString *address = @"error";
     struct ifaddrs *interfaces = NULL;
@@ -58,22 +54,18 @@
     
 }
 
-- (void) nativeFunction:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options {
-    
-    //get the callback id
-    NSString *callbackId = [arguments pop];
-    
-    NSString *resultType = [arguments objectAtIndex:0]; 
-    CDVPluginResult *result;
-    
-    if ( [resultType isEqualToString:@"success"] ) {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: @"Success :)"];
-        [self writeJavascript:[result toSuccessCallbackString:callbackId]];
+- (void)getIPAddress:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    NSString* echo = [self getIP];
+
+    if (echo != nil && [echo length] > 0) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:echo];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
-    else {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: @"Error :("];
-        [self writeJavascript:[result toErrorCallbackString:callbackId]];
-    }
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 @end

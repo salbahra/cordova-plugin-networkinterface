@@ -18,12 +18,11 @@
  */
 
 #import <Cordova/CDVPlugin.h>
-#import <Cordova/CDVInvokedUrlCommand.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
 @interface CDVNetworkInterface : CDVPlugin
 
-- (void) nativeFunction:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options;
+- (void)getIPAddress:(CDVInvokedUrlCommand*)command;
 
 @end

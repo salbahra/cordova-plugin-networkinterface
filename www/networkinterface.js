@@ -21,10 +21,9 @@
 
 var NetworkInterface = {
     
-    callNativeFunction: function (success, fail, resultType) {
-            return Cordova.exec( success, fail, 
+    getIPAddress: function (success, fail, resultType) {
+            return Cordova.exec(success, fail, 
                     "com.albahra.plugins.networkinterface", 
-                    "nativeFunction", 
-                    [resultType]);
+                    "getIPAddress");
     }
 };
