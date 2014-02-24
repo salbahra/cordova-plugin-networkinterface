@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.albahra.plugin.networkinterface"
+    version="1.0.0">
+
+    <name>NetworkInterface</name>
+    <description>
+    	This plugin allows your application to retrieve the local wifi address.
+	</description>
+
+    <license>MIT</license>
+
+	<engines>
+		<engine name="cordova" version="&gt;=3.1.0" />
+	</engines>
+
+    <js-module src="www/networkinterface.js" name="networkinterface">
+    	<clobbers target="window.networkinterface" />
+    </js-module>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="NetworkInterface">
+                <param name="ios-package" value="CDVNetworkInterface" onload="true" />
+            </feature>
+        </config-file>
+        
+        <header-file src="src/ios/CDVNetworkInterface.h" />
+        <source-file src="src/ios/CDVNetworkInterface.m" />
+        
+    </platform>
+
+</plugin>
