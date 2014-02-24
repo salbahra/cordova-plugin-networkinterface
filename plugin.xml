@@ -11,6 +11,8 @@
 	</description>
 
     <license>MIT</license>
+    
+    <keywords>local,ip,wifi,network</keywords>
 
 	<engines>
 		<engine name="cordova" version="&gt;=3.1.0" />
@@ -23,7 +25,7 @@
     <!-- ios -->
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
-            <feature name="NetworkInterface">
+            <feature name="networkinterface">
                 <param name="ios-package" value="CDVNetworkInterface" onload="true" />
             </feature>
         </config-file>
