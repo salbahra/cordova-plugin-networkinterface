@@ -1,5 +1,5 @@
 var exec = require('cordova/exec');
-   
+
 var networkinterface = function() {
 };
 
