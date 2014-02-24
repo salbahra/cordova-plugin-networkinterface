@@ -3,19 +3,23 @@ Network Interface
 
 Network interface information plugin for Cordova/PhoneGap that supports iOS.
 
+## PhoneGap Build
+
+To include the StatusBar plugin in your PhoneGap Build application, add this to your config.xml:
+
+    <gap:plugin name="com.albahra.plugin.networkinterface" />
+
+## Command Line Install
+
+    phonegap local plugin add https://github.com/salbahra/NetworkInterFacePlugin
+
 ## Usage
-
-Install the plugin using the CLI, for instance with PhoneGap:
-
-	phonegap local plugin add https://github.com/salbahra/NetworkInterFacePlugin
 
 The plugin creates the object `cordova.plugins.networkinterface` with the methods `getIPAddress(IP, onSuccess, onError)`.
 
 Example:
 
 	cordova.plugins.networkinterface.getIPAddress(function (ip) { alert(ip); });
-
-## Notes
 
 ## License
 
