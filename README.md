@@ -11,7 +11,7 @@ To include the StatusBar plugin in your PhoneGap Build application, add this to 
 
 ## Command Line Install
 
-    phonegap local plugin add https://github.com/salbahra/NetworkInterFacePlugin
+    phonegap local plugin add https://github.com/salbahra/NetworkInterfacePlugin
 
 ## Usage
 
