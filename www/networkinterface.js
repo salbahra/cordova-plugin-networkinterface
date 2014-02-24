@@ -19,7 +19,7 @@
  *
 */
 
-var NetworkInterface = {
+var networkinterface = {
     
     getIPAddress: function (success, fail, resultType) {
             return Cordova.exec(success, fail, 
