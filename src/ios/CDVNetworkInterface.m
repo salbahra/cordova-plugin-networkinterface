@@ -1,6 +1,4 @@
 #import "CDVNetworkInterface.h"
-#import "../Cordova/CDV.h"
-#import "../Cordova/CDVPlugin.h"
 
 @implementation NetworkInterface
 
