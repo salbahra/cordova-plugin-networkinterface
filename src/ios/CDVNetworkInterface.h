@@ -23,6 +23,6 @@
 
 @interface CDVNetworkInterface : CDVPlugin
 
-- (void)getIPAddress:(CDVInvokedUrlCommand*)command;
+- (void) getIPAddress:(CDVInvokedUrlCommand*)command;
 
 @end
