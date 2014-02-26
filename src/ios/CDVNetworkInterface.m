@@ -37,13 +37,13 @@
 {
     CDVPluginResult* pluginResult = nil;
     NSString* ipaddr = [self getIP];
-
-    if (ipaddr != nil && ipaddr != @"error") {
+    
+    if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ipaddr];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
-
+    
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
