@@ -15,7 +15,7 @@ To include the StatusBar plugin in your PhoneGap Build application, add this to 
 
 ## Usage
 
-The plugin creates the object `networkinterface` with the methods `getIPAddress(IP, onSuccess, onError)`.
+The plugin creates the object `networkinterface` with the methods `getIPAddress(onSuccess, onError)`.
 
 Example:
 
