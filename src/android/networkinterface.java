@@ -6,6 +6,7 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
+import java.io.*;
 import java.net.*;
 import java.util.*;
 import org.apache.http.conn.util.InetAddressUtils;
@@ -16,19 +17,24 @@ public class networkinterface extends CordovaPlugin {
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		try {
-		    if (GET_IP_ADDRESS.equals(action)) { 
-		       callbackContext.success(getIPAddress());
-		       return true;
-		    }
-		    callbackContext.error("Error");
-		    return false;
+			if (GET_IP_ADDRESS.equals(action)) { 
+				String ip = getIPAddress();
+				if (ip == "Error") {
+					callbackContext.error("Error");
+					return false;
+				}
+				callbackContext.success(ip);
+				return true;
+			}
+			callbackContext.error("Error");
+			return false;
 		} catch(Exception e) {
-		    callbackContext.error("Error");
-		    return false;
+			callbackContext.error("Error");
+			return false;
 		} 
 	}
 
-	public static String getIPAddress() {
+	private static String getIPAddress() {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
@@ -42,8 +48,8 @@ public class networkinterface extends CordovaPlugin {
                     }
                 }
             }
-        } catch (Exception ex) { } // for now eat exceptions
-        return "";
+        } catch (Exception ex) { return "Error"; } // for now eat exceptions
+        return "Error";
     }
 
 } 
