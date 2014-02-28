@@ -1,7 +1,7 @@
 Network Interface
 =================
 
-Network interface information plugin for Cordova/PhoneGap that supports iOS.
+Network interface information plugin for Cordova/PhoneGap that supports Android and iOS.
 
 ## PhoneGap Build
 
