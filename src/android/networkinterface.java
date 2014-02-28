@@ -6,6 +6,9 @@ import org.apache.cordova.CordovaPlugin;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
+import java.net.*;
+import java.util.*;
+import org.apache.http.conn.util.InetAddressUtils;
 
 public class networkinterface extends CordovaPlugin { 
 	public static final String GET_IP_ADDRESS="getIPAddress"; 
@@ -14,7 +17,7 @@ public class networkinterface extends CordovaPlugin {
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		try {
 		    if (GET_IP_ADDRESS.equals(action)) { 
-		       callbackContext.success(getIpAddr());
+		       callbackContext.success(getIPAddress());
 		       return true;
 		    }
 		    callbackContext.error("Error");
@@ -25,19 +28,22 @@ public class networkinterface extends CordovaPlugin {
 		} 
 	}
 
-	public String getIpAddr() {
-		WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
-		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-		int ip = wifiInfo.getIpAddress();
-
-		String ipString = String.format(
-		"%d.%d.%d.%d",
-		(ip & 0xff),
-		(ip >> 8 & 0xff),
-		(ip >> 16 & 0xff),
-		(ip >> 24 & 0xff));
-
-		return ipString;
-	}
+	public static String getIPAddress() {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress().toUpperCase();
+                        boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        if (isIPv4)
+                            return sAddr;
+                    }
+                }
+            }
+        } catch (Exception ex) { } // for now eat exceptions
+        return "";
+    }
 
 } 
