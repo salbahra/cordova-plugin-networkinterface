@@ -41,7 +41,7 @@
             </feature>
         </config-file>
  
-        <source-file src="src/android/networkinterface.java" target-dir="src/android" />      
+        <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />      
     </platform>
 
 </plugin>
