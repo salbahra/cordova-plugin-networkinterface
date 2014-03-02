@@ -12,7 +12,7 @@ namespace Cordova.Extension.Commands
             try
             {
                 List<string> ipAddresses = new List<string>();
-                var hostnames = NetworkInformation.GetHostNames();
+                var hostnames = Windows.Networking.Connectivity.NetworkInformation.GetHostNames();
                 foreach (var hn in hostnames)
                 {
                     //IanaInterfaceType == 71 => Wifi
