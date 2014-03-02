@@ -44,4 +44,14 @@
         <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />      
     </platform>
 
+    <platform name="wp8">
+        <config-file target="config.xml" parent="/*">
+            <feature name="networkinterface">
+                <param name="wp-package" value="networkinterface"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/wp8/networkinterface.cs" />
+    </platform>
+
 </plugin>
