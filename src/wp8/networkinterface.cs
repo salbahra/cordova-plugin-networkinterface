@@ -7,7 +7,7 @@ namespace Cordova.Extension.Commands
 {
     public class networkinterface : BaseCommand
     {
-        public void getIPAddress()
+        public void getIPAddress(string options)
         {
             try
             {
