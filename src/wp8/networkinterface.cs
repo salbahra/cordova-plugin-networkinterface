@@ -1,6 +1,7 @@
 using WPCordovaClassLib.Cordova;
 using WPCordovaClassLib.Cordova.Commands;
 using WPCordovaClassLib.Cordova.JSON;
+using System.Collections.Generic;
 
 namespace Cordova.Extension.Commands
 {
