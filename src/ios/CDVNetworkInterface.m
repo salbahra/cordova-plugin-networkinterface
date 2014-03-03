@@ -3,7 +3,7 @@
 @implementation CDVNetworkInterface
 
 - (NSString *)getIP {
-    
+
     NSString *address = @"error";
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
@@ -19,31 +19,31 @@
                 if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
                     // Get NSString from C String
                     address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                    
+
                 }
-                
+
             }
-            
+
             temp_addr = temp_addr->ifa_next;
         }
     }
     // Free memory
     freeifaddrs(interfaces);
     return address;
-    
+
 }
 
 - (void) getIPAddress:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
     NSString* ipaddr = [self getIP];
-    
+
     if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ipaddr];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
-    
+
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 

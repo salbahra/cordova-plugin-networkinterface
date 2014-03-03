@@ -11,13 +11,13 @@ import java.net.*;
 import java.util.*;
 import org.apache.http.conn.util.InetAddressUtils;
 
-public class networkinterface extends CordovaPlugin { 
-	public static final String GET_IP_ADDRESS="getIPAddress"; 
+public class networkinterface extends CordovaPlugin {
+	public static final String GET_IP_ADDRESS="getIPAddress";
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		try {
-			if (GET_IP_ADDRESS.equals(action)) { 
+			if (GET_IP_ADDRESS.equals(action)) {
 				String ip = getIPAddress();
 				if (ip == "Error") {
 					callbackContext.error("Error");
@@ -31,7 +31,7 @@ public class networkinterface extends CordovaPlugin {
 		} catch(Exception e) {
 			callbackContext.error("Error");
 			return false;
-		} 
+		}
 	}
 
 	private static String getIPAddress() {
@@ -52,4 +52,4 @@ public class networkinterface extends CordovaPlugin {
         return "Error";
     }
 
-} 
+}

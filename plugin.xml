@@ -11,7 +11,7 @@
 	</description>
 
     <license>MIT</license>
-    
+
     <keywords>local,ip,wifi,network</keywords>
 
 	<engines>
@@ -29,7 +29,7 @@
                 <param name="ios-package" value="CDVNetworkInterface" onload="true" />
             </feature>
         </config-file>
-        
+
         <header-file src="src/ios/CDVNetworkInterface.h" />
         <source-file src="src/ios/CDVNetworkInterface.m" />
     </platform>
@@ -40,8 +40,8 @@
                 <param name="android-package" value="com.albahra.plugin.networkinterface.networkinterface"/>
             </feature>
         </config-file>
- 
-        <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />      
+
+        <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />
     </platform>
 
     <platform name="wp8">

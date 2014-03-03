@@ -17,15 +17,15 @@ namespace Cordova.Extension.Commands
                 {
                     //IanaInterfaceType == 71 => Wifi
                     //IanaInterfaceType == 6 => Ethernet (Emulator)
-                    if (hn.IPInformation != null && 
-                        (hn.IPInformation.NetworkAdapter.IanaInterfaceType == 71 
+                    if (hn.IPInformation != null &&
+                        (hn.IPInformation.NetworkAdapter.IanaInterfaceType == 71
                         || hn.IPInformation.NetworkAdapter.IanaInterfaceType == 6))
                     {
                         string ipAddress = hn.DisplayName;
                         ipAddresses.Add(ipAddress);
                     }
                 }
-     
+
                 if (ipAddresses.Count < 1)
                 {
                     DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR));
