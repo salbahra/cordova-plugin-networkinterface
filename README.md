@@ -5,7 +5,7 @@ Network interface information plugin for Cordova/PhoneGap that supports Android,
 
 ## PhoneGap Build
 
-To include the StatusBar plugin in your PhoneGap Build application, add this to your config.xml:
+To include the Network Interface plugin in your PhoneGap Build application, add this to your config.xml:
 
     <gap:plugin name="com.albahra.plugin.networkinterface" />
 
