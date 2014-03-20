@@ -40,7 +40,7 @@ public class networkinterface extends CordovaPlugin {
             for (NetworkInterface intf : interfaces) {
                 List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
                 for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
+                    if (!addr.isLoopbackAddress() && !addr.isVirtual()) {
                         String sAddr = addr.getHostAddress().toUpperCase();
                         boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
                         if (isIPv4)
