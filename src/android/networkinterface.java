@@ -2,7 +2,11 @@ package com.albahra.plugin.networkinterface;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
@@ -29,8 +33,8 @@ public class networkinterface extends CordovaPlugin {
 		}
 	}
 
-	private static String getIPAddress() {
-		WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+	private String getIPAddress() {
+		WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
 		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 		int ip = wifiInfo.getIpAddress();
 
