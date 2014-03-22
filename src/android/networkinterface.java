@@ -3,13 +3,8 @@ package com.albahra.plugin.networkinterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
-import org.json.JSONObject;
-import org.json.JSONArray;
-import org.json.JSONException;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import org.apache.http.conn.util.InetAddressUtils;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 
 public class networkinterface extends CordovaPlugin {
 	public static final String GET_IP_ADDRESS="getIPAddress";
