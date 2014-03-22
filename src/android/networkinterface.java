@@ -18,7 +18,7 @@ public class networkinterface extends CordovaPlugin {
 		try {
 			if (GET_IP_ADDRESS.equals(action)) {
 				String ip = getIPAddress();
-				if (ip == "Error") {
+				if (ip == "0.0.0.0") {
 					callbackContext.error("Error");
 					return false;
 				}
