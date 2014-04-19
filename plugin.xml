@@ -58,4 +58,11 @@
         <source-file src="src/wp8/networkinterface.cs" />
     </platform>
 
+    <platform name="blackberry10">
+        <source-file src="src/blackberry10/index.js" target-dir="networkinterface" />
+        <config-file target="www/config.xml" parent="/widget">
+            <feature name="com.albahra.plugin.networkinterface" value="com.albahra.plugin.networkinterface" />
+        </config-file>
+    </platform>
+
 </plugin>
