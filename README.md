@@ -1,7 +1,7 @@
 Network Interface
 =================
 
-Network interface information plugin for Cordova/PhoneGap that supports Android, iOS, and Windows Phone 8.
+Network interface information plugin for Cordova/PhoneGap that supports Android, Blackberry 10, iOS, and Windows Phone 8.
 
 ## PhoneGap Build
 
