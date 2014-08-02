@@ -12,6 +12,7 @@ import android.net.wifi.WifiManager;
 
 public class networkinterface extends CordovaPlugin {
 	public static final String GET_IP_ADDRESS="getIPAddress";
+	public static final String GET_SSID="getSSID";
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -23,6 +24,10 @@ public class networkinterface extends CordovaPlugin {
 					callbackContext.error("Error");
 					return false;
 				}
+				callbackContext.success(ip);
+				return true;
+			} else if (GET_SSID.equals(action)) {
+				String ssid = getSSID();
 				callbackContext.success(ip);
 				return true;
 			}
@@ -48,5 +53,12 @@ public class networkinterface extends CordovaPlugin {
 		);
 
 		return ipString;
+	}
+
+	private String getSSID() {
+		WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
+		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+
+		return wifiInfo.getSSID();
 	}
 }
