@@ -9,6 +9,8 @@ import org.json.JSONException;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.util.Log;
+import java.lang.SecurityException;
 
 public class networkinterface extends CordovaPlugin {
 	public static final String GET_IP_ADDRESS="getIPAddress";
@@ -20,22 +22,26 @@ public class networkinterface extends CordovaPlugin {
 				String ip = getIPAddress();
 				String fail = "0.0.0.0";
 				if (ip.equals(fail)) {
-					callbackContext.error("Error");
+					callbackContext.error("Got no valid IP address");
 					return false;
 				}
 				callbackContext.success(ip);
 				return true;
 			}
-			callbackContext.error("Error");
+			callbackContext.error("Error no such method '" + action + "'");
 			return false;
 		} catch(Exception e) {
-			callbackContext.error("Error");
+			callbackContext.error("Error while retrieving the IP address. " + e.getMessage());
 			return false;
 		}
 	}
 
 	private String getIPAddress() {
-		WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
+		try {
+			WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
+		} catch (SecurityException e) {
+			Log.d("Permission error: " + e.getMessage());
+		}
 		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 		int ip = wifiInfo.getIpAddress();
 
