@@ -9,8 +9,6 @@ import org.json.JSONException;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.util.Log;
-import java.lang.SecurityException;
 
 public class networkinterface extends CordovaPlugin {
 	public static final String GET_IP_ADDRESS="getIPAddress";
@@ -37,11 +35,7 @@ public class networkinterface extends CordovaPlugin {
 	}
 
 	private String getIPAddress() {
-		try {
-			WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
-		} catch (SecurityException e) {
-			Log.d("Permission error: " + e.getMessage());
-		}
+		WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
 		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 		int ip = wifiInfo.getIpAddress();
 
