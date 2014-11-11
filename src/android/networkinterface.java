@@ -20,16 +20,16 @@ public class networkinterface extends CordovaPlugin {
 				String ip = getIPAddress();
 				String fail = "0.0.0.0";
 				if (ip.equals(fail)) {
-					callbackContext.error("Error");
+					callbackContext.error("Got no valid IP address");
 					return false;
 				}
 				callbackContext.success(ip);
 				return true;
 			}
-			callbackContext.error("Error");
+			callbackContext.error("Error no such method '" + action + "'");
 			return false;
 		} catch(Exception e) {
-			callbackContext.error("Error");
+			callbackContext.error("Error while retrieving the IP address. " + e.getMessage());
 			return false;
 		}
 	}
