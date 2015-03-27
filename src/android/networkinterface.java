@@ -35,18 +35,50 @@ public class networkinterface extends CordovaPlugin {
 	}
 
 	private String getIPAddress() {
-		WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
-		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-		int ip = wifiInfo.getIpAddress();
-
-		String ipString = String.format(
-			"%d.%d.%d.%d",
-			(ip & 0xff),
-			(ip >> 8 & 0xff),
-			(ip >> 16 & 0xff),
-			(ip >> 24 & 0xff)
-		);
-
+		String ipString = "";
+		// has been tested and valid for Mobile Network and WiFi
+		// System.out.println("Java IP Address: " + ipString);
+		try {
+			label1:
+			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress()) {
+						ipString = inetAddress.getHostAddress().toString();
+						/* Example output:
+						 * System.out.println("Enumeration IP Address: " + ipString);
+						 * 03-27 11:28:01.249: I/System.out(14553): Enumeration IP Address: fe80::12c3:7bff:fe07:54b3%wlan0
+						 * 03-27 11:28:01.249: I/System.out(14553): Enumeration IP Address: 192.168.0.31
+						*/
+						if (isValidIpAddress(ipString)) {
+							break label1;
+						}
+					}
+				}
+			}
+		} catch (SocketException ex) {
+		}
 		return ipString;
+	}
+	
+	private boolean isValidIpAddress(String str) {
+	        String[] arr = str.split("\\.");
+	        if (arr.length != 4) {
+	            return false;
+	        }
+	        if (str.startsWith("0."))
+	        	return false;
+	        for (String item : arr) {
+	            try {
+	                int a = Integer.parseInt(item);
+	                if (a < 0 || a > 255) {
+	                    return false;
+	                }
+	            } catch (NumberFormatException ex) {
+	                return false;
+	            }
+	        }
+	        return true;
 	}
 }
