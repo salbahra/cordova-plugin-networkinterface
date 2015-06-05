@@ -1,0 +1,41 @@
+{
+  "name": "NetworkInterface",
+  "version": "1.0.7",
+  "description": "This plugin allows your application to retrieve the local wifi address.",
+  "cordova": {
+    "id": "com.albahra.plugin.networkinterface",
+    "platforms": [
+      "ios",
+      "android",
+      "wp8",
+      "blackberry10"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salbahra/cordova-plugin-networkinterface.git"
+  },
+  "keywords": [
+    "local",
+    "ip",
+    "wifi",
+    "network",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android",
+    "cordova-wp8",
+    "cordova-blackberry10"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.1.0"
+    }
+  ],
+  "author": "Samer Albahra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/salbahra/cordova-plugin-networkinterface/issues"
+  },
+  "homepage": "https://github.com/salbahra/cordova-plugin-networkinterface#readme"
+}
