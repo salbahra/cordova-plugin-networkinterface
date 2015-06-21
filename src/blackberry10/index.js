@@ -4,21 +4,23 @@ function getIP() {
     try {
         con = window.qnx.webplatform.device.activeConnection;
     }
-    catch (e) { return false; }
+    catch ( e ) { return false; }
 
-    if (!con || con.type == 'cellular') return false;
+    if ( !con || con.type == "cellular" ) {
+		return false;
+    }
     return con.defaultGateways[0];
 }
 
 module.exports = {
-    getIPAddress: function (success, fail, args, env) {
-        var result = new PluginResult(args, env),
+    getIPAddress: function( success, fail, args, env ) {
+        var result = new PluginResult( args, env ),
             ip = getIP();
 
-        if (!ip) {
+        if ( !ip ) {
             result.error();
         } else {
-            result.ok(ip);
+            result.ok( ip );
         }
     }
 };

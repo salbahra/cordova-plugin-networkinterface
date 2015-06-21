@@ -3,7 +3,7 @@
   "version": "1.0.7",
   "description": "This plugin allows your application to retrieve the local wifi address.",
   "cordova": {
-    "id": "com.albahra.plugin.networkinterface",
+    "id": "cordova-plugin-networkinterface",
     "platforms": [
       "ios",
       "android",

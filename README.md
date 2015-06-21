@@ -7,11 +7,11 @@ Network interface information plugin for Cordova/PhoneGap that supports Android,
 
 To include the Network Interface plugin in your PhoneGap Build application, add this to your config.xml:
 
-    <gap:plugin name="com.albahra.plugin.networkinterface" />
+    <gap:plugin name="cordova-plugin-networkinterface" source="npm" />
 
 ## Command Line Install
 
-    phonegap local plugin add https://github.com/salbahra/NetworkInterfacePlugin
+    cordova plugin add cordova-plugin-networkinterface
 
 ## Usage
 
@@ -24,8 +24,6 @@ Example:
 ## License
 
 The MIT License (MIT)
-
-Copyright (c) 2013 Albahra.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
