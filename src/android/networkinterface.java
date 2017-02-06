@@ -10,16 +10,21 @@ import org.json.JSONException;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.util.Log;
 
 import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Enumeration;
+import java.util.logging.*;
 
 public class networkinterface extends CordovaPlugin {
 	public static final String GET__WIFI_IP_ADDRESS="getWiFiIPAddress";
 	public static final String GET_CARRIER_IP_ADDRESS="getCarrierIPAddress";
+	private static final String TAG = "cordova-plugin-networkinterface";
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -67,24 +72,26 @@ public class networkinterface extends CordovaPlugin {
 		return ipString;
 	}
 
+
+
 	private String getCarrierIPAddress() { 
+	  try {
+	    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+	       NetworkInterface intf = (NetworkInterface) en.nextElement();
+	       //Log.e(TAG, "Interface: " + intf.toString() + " name: " + intf.getName() + " display nane: " + intf.getDisplayName() );
+	       for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+	          InetAddress inetAddress = enumIpAddr.nextElement();
+	          if (!inetAddress.isLoopbackAddress() && (!intf.getName().equals("wlan0")) && inetAddress instanceof Inet4Address) {
+	             String ipaddress = inetAddress.getHostAddress().toString();
+	             return ipaddress;
+	          }
+	       }
+	    }
+	  } catch (SocketException ex) {
+	     Log.e(TAG, "Exception in Get IP Address: " + ex.toString());
+	  }
+	  return null;
+	}
 
-    try {
-        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-            NetworkInterface intf = en.nextElement();
-            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                InetAddress inetAddress = enumIpAddr.nextElement();
-                if (!inetAddress.isLoopbackAddress()) {
-                    String ip = inetAddress.getHostAddress().toString();
-                    //Log.i(TAG, "***** IP="+ ip);
-                    return ip;
-                }
-            }
-        }
-    } catch (SocketException ex) {
-        //Log.e(TAG, ex.toString());
-    }
-    return null;
 
-    } 
 }
