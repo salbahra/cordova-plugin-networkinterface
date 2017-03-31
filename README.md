@@ -19,6 +19,10 @@ The plugin creates the object `networkinterface` with the methods:
 * getWiFiIPAddress(onSuccess, onError)
 * getCarrierIPAddress(onSuccess, onError)
 
+* getIPAddress(onSuccess, onError)
+
+`This method is deprecated and uses the getWiFiIPAddress method.`
+
 Example:
 
 	networkinterface.getWiFiIPAddress(function (ip) { alert(ip); });
