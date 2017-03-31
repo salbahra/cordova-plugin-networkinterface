@@ -13,7 +13,7 @@ function getIP() {
 }
 
 module.exports = {
-    getIPAddress: function( success, fail, args, env ) {
+    getWiFiIPAddress: function( success, fail, args, env ) {
         var result = new PluginResult( args, env ),
             ip = getIP();
 

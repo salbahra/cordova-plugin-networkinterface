@@ -1,4 +1,4 @@
-function getIPAddress( callback ) {
+function getWiFiIPAddress( callback ) {
     var ips = [];
 
     var RTCPeerConnection = window.RTCPeerConnection ||
@@ -36,7 +36,7 @@ function getIPAddress( callback ) {
 }
 
 module.exports = {
-  getIPAddress: getIPAddress
+  getWiFiIPAddress: getWiFiIPAddress
 };
 
 require( "cordova/exec/proxy" ).add( "networkinterface", module.exports );
