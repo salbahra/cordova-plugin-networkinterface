@@ -48,6 +48,20 @@
         <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />
     </platform>
 
+
+    <platform name="windows">
+        <config-file target="config.xml" parent="/*">
+            <feature name="networkinterface">
+                <param name="windows-package" value="networkinterface"/>
+            </feature>
+        </config-file>
+
+        <js-module src="src/windows/networkinterfaceProxy.js" name="networkinterfaceProxy">
+            <runs />
+        </js-module>
+    </platform>
+
+
     <platform name="wp8">
         <config-file target="config.xml" parent="/*">
             <feature name="networkinterface">
