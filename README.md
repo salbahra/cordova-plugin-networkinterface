@@ -23,10 +23,29 @@ The plugin creates the object `networkinterface` with the methods:
 
 `This method is deprecated and uses the getWiFiIPAddress method.`
 
+The onSuccess() callback is provided with two values: 
+
+    function onSuccess(ip, subnet) { }
+
+`Note: Subnet is only supported for iOS and Android currently`
+
+The onError() callback is provided with a single value:
+
+    function onError(error) { }
+
+`Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
+`
+
 Example:
 
 	networkinterface.getWiFiIPAddress(function (ip) { alert(ip); });
 	networkinterface.getCarrierIPAddress(function (ip) { alert(ip); });
+    
+    // with subnet and error handler
+    networkinterface.getWiFiIPAddress(
+        function (ip, subnet) { alert(ip + ":" + subnet); }, 
+        function (err) { alert("Err: " + err); }
+    );
 
 ## TODO
 
