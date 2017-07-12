@@ -2,9 +2,10 @@
 
 @implementation CDVNetworkInterface
 
-- (NSString *)getWiFiIP {
+- (NSArray *)getWiFiIP {
 
     NSString *address = @"error";
+    NSString *subnet = @"error";
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
     int success = 0;
@@ -19,7 +20,7 @@
                 if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
                     // Get NSString from C String
                     address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-
+                    subnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
                 }
 
             }
@@ -29,13 +30,14 @@
     }
     // Free memory
     freeifaddrs(interfaces);
-    return address;
+    return (NSArray*)@[address, subnet];
 }
 
-- (NSString *)getCarrierIP {
+- (NSArray *)getCarrierIP {
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
-    NSString *cellAddress = nil;
+    NSString *cellAddress = @"error";
+    NSString *cellSubnet = @"error";
 
     // retrieve the current interfaces - returns 0 on success
     if(!getifaddrs(&interfaces)) {
@@ -51,6 +53,7 @@
                 if([name isEqualToString:@"pdp_ip0"] && ![addr isEqualToString:@"0.0.0.0"]) {
                     // Interface is the cell connection on the iPhone
                     cellAddress = addr;
+                    cellSubnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
                 }
             }
             temp_addr = temp_addr->ifa_next;
@@ -59,19 +62,21 @@
         freeifaddrs(interfaces);
     }
 
-    return cellAddress;
+    return (NSArray *)@[cellAddress, cellSubnet];
 }
 
 
 - (void) getWiFiIPAddress:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
-    NSString* ipaddr = [self getWiFiIP];
-
+    NSArray* ipinfo = [self getWiFiIP];
+    NSString* ipaddr = ipinfo[0];
+    NSString* ipsubnet = ipinfo[1];
+    
     if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ipaddr];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[ipaddr, ipsubnet]];
     } else {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No valid IP address identified"];
     }
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -80,12 +85,14 @@
 - (void) getCarrierIPAddress:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
-    NSString* ipaddr = [self getCarrierIP];
-
+    NSArray *ipinfo = [self getCarrierIP];
+    NSString *ipaddr = ipinfo[0];
+    NSString *ipsubnet = ipinfo[1];
+    
     if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:ipaddr];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[ipaddr, ipsubnet]];
     } else {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No valid IP address identified"];
     }
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
