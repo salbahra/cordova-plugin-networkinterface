@@ -3,53 +3,56 @@ Network Interface
 
 Network interface information plugin for Cordova/PhoneGap that supports Android, Blackberry 10, Browser, iOS, and Windows Phone 8.
 
+## Command Line Install
+
+    cordova plugin add cordova-plugin-networkinterface
+
 ## PhoneGap Build
 
 To include the Network Interface plugin in your PhoneGap Build application, add this to your config.xml:
 
     <plugin name="cordova-plugin-networkinterface" source="npm" />
 
-## Command Line Install
-
-    cordova plugin add cordova-plugin-networkinterface
-
 ## Usage
 
 The plugin creates the object `networkinterface` with the methods:
 * getWiFiIPAddress(onSuccess, onError)
 * getCarrierIPAddress(onSuccess, onError)
-
 * getIPAddress(onSuccess, onError)
-
-`This method is deprecated and uses the getWiFiIPAddress method.`
+  * *This method is deprecated and uses the `getWiFiIPAddress` method.*
 
 The onSuccess() callback is provided with two values: 
 
-    function onSuccess(ip, subnet) { }
-
-`Note: Subnet is only supported for iOS and Android currently`
+```javascript
+function onSuccess(ip, subnet) {
+	// Note: Subnet is only supported for iOS and Android currently
+}
+```
 
 The onError() callback is provided with a single value:
 
-    function onError(error) { }
-
-`Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
-`
+```javascript
+// Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
+function onError(error) {}
+```
 
 Example:
 
-	networkinterface.getWiFiIPAddress(function (ip) { alert(ip); });
-	networkinterface.getCarrierIPAddress(function (ip) { alert(ip); });
-    
-    // with subnet and error handler
-    networkinterface.getWiFiIPAddress(
-        function (ip, subnet) { alert(ip + ":" + subnet); }, 
-        function (err) { alert("Err: " + err); }
-    );
+```javascript
+networkinterface.getWiFiIPAddress(function (ip) { alert(ip); });
+networkinterface.getCarrierIPAddress(function (ip) { alert(ip); });
+
+// With subnet and error handler
+networkinterface.getWiFiIPAddress(
+    function(ip, subnet) { alert(ip + ":" + subnet); }, 
+    function(err) { alert("Err: " + err); }
+);
+```
 
 ## TODO
 
-getCarrierIPAddress() is currently supported on iOS and Android only, need to add Blackberry 10, Browser, and Windows Phone 8 support
+* getCarrierIPAddress() is currently supported on iOS and Android only, need to add Blackberry 10, Browser, and Windows Phone 8 support
+* getSSID() is currently written in branch [ssid](https://github.com/salbahra/cordova-plugin-networkinterface/tree/ssid) but is untested on all platforms and therefore not merged
 
 ## License
 
