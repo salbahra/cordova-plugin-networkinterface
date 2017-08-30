@@ -13,4 +13,8 @@ networkinterface.getCarrierIPAddress = function( success, fail ) {
     cordova.exec( success, fail, "networkinterface", "getCarrierIPAddress", [] );
 };
 
+networkinterface.getHttpProxyInformation = function(url, success, fail ) {
+    cordova.exec( success, fail, "networkinterface", "getHttpProxyInformation", [url] );
+};
+
 module.exports = networkinterface;
