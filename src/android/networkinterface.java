@@ -7,6 +7,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;
@@ -20,7 +21,9 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Enumeration;
 import java.util.logging.*;
 
@@ -39,17 +42,9 @@ public class networkinterface extends CordovaPlugin {
 				return extractIpInfo(getWiFiIPAddress(), callbackContext);
 			} else if (GET_CARRIER_IP_ADDRESS.equals(action)) {
 				return extractIpInfo(getCarrierIPAddress(), callbackContext);
-			} else if(GET_HTTP_PROXY_INFORMATION.equals(action){
-				return getHttpProxyInformation(args.getString(0), callbackContext)
-				String url = ;
-				String address = "";
-				String port = "";
-				List<PluginResult> result = new ArrayList<PluginResult>();
-				result.add(new PluginResult(PluginResult.Status.OK, address));
-				result.add(new PluginResult(PluginResult.Status.OK, port));
-				callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
-				return true;
-			})
+			} else if(GET_HTTP_PROXY_INFORMATION.equals(action)) {
+				return getHttpProxyInformation(args.getString(0), callbackContext);
+			}
 			callbackContext.error("Error no such method '" + action + "'");
 			return false;
 		} catch(Exception e) {
@@ -59,12 +54,14 @@ public class networkinterface extends CordovaPlugin {
 	}
 
 	private boolean getHttpProxyInformation(String url, CallbackContext callbackContext){
-		String address = "Testy McTestFace";
-		String port = "Facey McTestTest";
-		List<PluginResult> result = new ArrayList<PluginResult>();
-		result.add(new PluginResult(PluginResult.Status.OK, address));
-		result.add(new PluginResult(PluginResult.Status.OK, port));
-		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
+		String host = "My HOST";
+		String port = "My PORT NUMBER";
+
+		Map<String,String> proxyInformation = new HashMap<String,String>();
+		proxyInformation.put("host", host);
+		proxyInformation.put("port", port);
+	
+		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, new JSONObject(proxyInformation)));
 		return true;
 	}
 
@@ -76,10 +73,12 @@ public class networkinterface extends CordovaPlugin {
 			callbackContext.error("No valid IP address identified");
 			return false;
 		}
-		List<PluginResult> result = new ArrayList<PluginResult>();
-		result.add(new PluginResult(PluginResult.Status.OK, ip));
-		result.add(new PluginResult(PluginResult.Status.OK, subnet));
-		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
+
+		Map<String,String> ipInformation = new HashMap<String,String>();
+		ipInformation.put("ip", ip);
+		ipInformation.put("subnet", subnet);
+
+		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, new JSONObject(ipInformation)));
 		return true;
 	}
 
