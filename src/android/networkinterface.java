@@ -18,7 +18,12 @@ import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.Proxy.Type;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,15 +58,25 @@ public class networkinterface extends CordovaPlugin {
 		}
 	}
 
-	private boolean getHttpProxyInformation(String url, CallbackContext callbackContext){
+	private JSONObject createProxyInformation (Proxy.Type proxyType, String host, String port) throws JSONException {
+		JSONObject proxyInformation = new JSONObject();
+		proxyInformation.put("type", proxyType.toString());
+		proxyInformation.put("host", host);
+		proxyInformation.put("port", port);
+		return proxyInformation;
+	}
+
+	private boolean getHttpProxyInformation(String url, CallbackContext callbackContext) throws JSONException, URISyntaxException {
 		String host = "My HOST";
 		String port = "My PORT NUMBER";
 
-		Map<String,String> proxyInformation = new HashMap<String,String>();
-		proxyInformation.put("host", host);
-		proxyInformation.put("port", port);
-	
-		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, new JSONObject(proxyInformation)));
+		ProxySelector defaultProxySelector = ProxySelector.getDefault();
+		List<Proxy> proxyList = defaultProxySelector.select(new URI(url));
+
+		JSONArray proxiesInformation = new JSONArray();
+		proxiesInformation.put(createProxyInformation(Proxy.Type.DIRECT, "none", "none"));
+
+		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, proxiesInformation));
 		return true;
 	}
 
