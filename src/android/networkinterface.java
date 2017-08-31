@@ -16,6 +16,7 @@ import android.util.Log;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.Proxy;
@@ -24,6 +25,7 @@ import java.net.Proxy.Type;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,23 +60,35 @@ public class networkinterface extends CordovaPlugin {
 		}
 	}
 
-	private JSONObject createProxyInformation (Proxy.Type proxyType, String host, String port) throws JSONException {
+	private JSONObject createProxyInformation (Proxy.Type proxyType, String host, String port, boolean isUnresolved) throws JSONException {
 		JSONObject proxyInformation = new JSONObject();
 		proxyInformation.put("type", proxyType.toString());
 		proxyInformation.put("host", host);
 		proxyInformation.put("port", port);
+		proxyInformation.put("isResolved", String.valueOf(!isUnresolved));
 		return proxyInformation;
 	}
 
 	private boolean getHttpProxyInformation(String url, CallbackContext callbackContext) throws JSONException, URISyntaxException {
-		String host = "My HOST";
-		String port = "My PORT NUMBER";
-
-		ProxySelector defaultProxySelector = ProxySelector.getDefault();
-		List<Proxy> proxyList = defaultProxySelector.select(new URI(url));
-
 		JSONArray proxiesInformation = new JSONArray();
-		proxiesInformation.put(createProxyInformation(Proxy.Type.DIRECT, "none", "none"));
+		ProxySelector defaultProxySelector = ProxySelector.getDefault();
+		
+		if(defaultProxySelector != null){
+			List<java.net.Proxy> proxyList = defaultProxySelector.select(new URI(url));
+			for(java.net.Proxy proxy: proxyList){
+				if (java.net.Proxy.Type.DIRECT.equals(proxy.type())) {
+                	break;
+            	}
+				InetSocketAddress proxyAddress = (InetSocketAddress)proxy.address();
+				if(proxyAddress != null){
+					proxiesInformation.put(createProxyInformation(proxy.type(), proxyAddress.getHostString(), String.valueOf(proxyAddress.getPort()), proxyAddress.isUnresolved()));
+				}
+			}
+		}
+
+		if(proxiesInformation.length() < 1){
+			proxiesInformation.put(createProxyInformation(Proxy.Type.DIRECT, "none", "none", true));
+		}
 
 		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, proxiesInformation));
 		return true;
