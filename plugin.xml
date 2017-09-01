@@ -47,47 +47,4 @@
 
         <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />
     </platform>
-
-
-    <platform name="windows">
-        <config-file target="config.xml" parent="/*">
-            <feature name="networkinterface">
-                <param name="windows-package" value="networkinterface"/>
-            </feature>
-        </config-file>
-
-        <js-module src="src/windows/networkinterfaceProxy.js" name="networkinterfaceProxy">
-            <runs />
-        </js-module>
-    </platform>
-
-
-    <platform name="wp8">
-        <config-file target="config.xml" parent="/*">
-            <feature name="networkinterface">
-                <param name="wp-package" value="networkinterface"/>
-            </feature>
-        </config-file>
-
-        <source-file src="src/wp8/networkinterface.cs" />
-    </platform>
-
-    <platform name="blackberry10">
-        <source-file src="src/blackberry10/index.js" target-dir="networkinterface" />
-        <config-file target="www/config.xml" parent="/widget">
-            <feature name="com.albahra.plugin.networkinterface" value="com.albahra.plugin.networkinterface" />
-        </config-file>
-    </platform>
-
-    <platform name="browser">
-        <config-file target="config.xml" parent="/*">
-            <feature name="networkinterface">
-                <param name="browser-package" value="networkinterface" />
-            </feature>
-        </config-file>
-
-        <js-module src="src/browser/networkinterfaceProxy.js" name="networkinterfaceProxy">
-            <runs />
-        </js-module>
-    </platform>
 </plugin>

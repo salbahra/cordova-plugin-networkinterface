@@ -6,9 +6,7 @@
     "id": "cordova-plugin-networkinterface",
     "platforms": [
       "ios",
-      "android",
-      "wp8",
-      "blackberry10"
+      "android"
     ]
   },
   "repository": {
@@ -22,9 +20,7 @@
     "network",
     "ecosystem:cordova",
     "cordova-ios",
-    "cordova-android",
-    "cordova-wp8",
-    "cordova-blackberry10"
+    "cordova-android"
   ],
   "engines": [
     {
