@@ -65,36 +65,41 @@
     return (NSArray *)@[cellAddress, cellSubnet];
 }
 
-
-- (void) getWiFiIPAddress:(CDVInvokedUrlCommand*)command
+-(void) respondWithIPAddress:(CDVInvokedUrlCommand*)command ipinfo:(NSArray*)ipinfo
 {
     CDVPluginResult* pluginResult = nil;
-    NSArray* ipinfo = [self getWiFiIP];
     NSString* ipaddr = ipinfo[0];
     NSString* ipsubnet = ipinfo[1];
-    
+
     if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[ipaddr, ipsubnet]];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No valid IP address identified"];
     }
 
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
+}
+
+//******************************************************
+// Methods declared in header
+//******************************************************
+
+- (void) getWiFiIPAddress:(CDVInvokedUrlCommand*)command
+{
+    NSArray* ipinfo = [self getWiFiIP];
+    [self respondWithIPAddress:command ipinfo:ipinfo];
 }
 
 - (void) getCarrierIPAddress:(CDVInvokedUrlCommand*)command
 {
-    CDVPluginResult* pluginResult = nil;
     NSArray *ipinfo = [self getCarrierIP];
-    NSString *ipaddr = ipinfo[0];
-    NSString *ipsubnet = ipinfo[1];
-    
-    if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[ipaddr, ipsubnet]];
-    } else {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No valid IP address identified"];
-    }
+    [self respondWithIPAddress:command ipinfo:ipinfo];
+}
 
+- (void) getHttpProxyInformation: (CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not implemented"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
