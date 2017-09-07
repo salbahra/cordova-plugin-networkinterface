@@ -70,14 +70,33 @@
     [self respondWithIPAddress:command ipinfo:ipinfo];
 }
 
-- (void) getHttpProxyInformation: (CDVInvokedUrlCommand*)command url:(NSString*)url 
+- (void) getHttpProxyInformation: (CDVInvokedUrlCommand*)command
 {
     NSLog(@"getHttpProxyInformation start");
-    //CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[ipaddr, ipsubnet]];
-    //CFNetworkCopyProxiesForURL is the function we need....
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not implemented"];
+
+    //TODO: handle missing URL...
+    NSString *url = [command.arguments objectAtIndex: 0];
+    CFDictionaryRef proxySettingsRef =CFNetworkCopySystemProxySettings();
+    CFURLRef urlRef = (__bridge CFURLRef)[NSURL fileURLWithPath:url];
+
+    CFArrayRef proxiesRef = CFNetworkCopyProxiesForURL(urlRef, proxySettingsRef);
+    NSArray *proxies = (__bridge NSArray*)proxiesRef;
+    
+    //[CFRelease url];
+    //[CFRelease proxies];
+    // If you create an object (either directly or by making a copy of another object—see The Create Rule), you own it.
+    // If you get an object from somewhere else, you do not own it. If you want to prevent it being disposed of, you must add yourself as an owner (using CFRetain).
+    // If you are an owner of an object, you must relinquish ownership when you have finished using it (using CFRelease).
+
+
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: proxies];
+
+    //qCDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: command.arguments];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     NSLog(@"getHttpProxyInformation end");
+
+    CFRelease(proxySettingsRef);
+    //CFRelease(proxiesRef);
 }
 
 @end
