@@ -60,12 +60,11 @@ public class networkinterface extends CordovaPlugin {
 		}
 	}
 
-	private JSONObject createProxyInformation (Proxy.Type proxyType, String host, String port, boolean isUnresolved) throws JSONException {
+	private JSONObject createProxyInformation (Proxy.Type proxyType, String host, String port) throws JSONException {
 		JSONObject proxyInformation = new JSONObject();
 		proxyInformation.put("type", proxyType.toString());
 		proxyInformation.put("host", host);
 		proxyInformation.put("port", port);
-		proxyInformation.put("isResolved", String.valueOf(!isUnresolved));
 		return proxyInformation;
 	}
 
@@ -81,13 +80,13 @@ public class networkinterface extends CordovaPlugin {
             	}
 				InetSocketAddress proxyAddress = (InetSocketAddress)proxy.address();
 				if(proxyAddress != null){
-					proxiesInformation.put(createProxyInformation(proxy.type(), proxyAddress.getHostString(), String.valueOf(proxyAddress.getPort()), proxyAddress.isUnresolved()));
+					proxiesInformation.put(createProxyInformation(proxy.type(), proxyAddress.getHostString(), String.valueOf(proxyAddress.getPort())));
 				}
 			}
 		}
 
 		if(proxiesInformation.length() < 1){
-			proxiesInformation.put(createProxyInformation(Proxy.Type.DIRECT, "none", "none", true));
+			proxiesInformation.put(createProxyInformation(Proxy.Type.DIRECT, "none", "none"));
 		}
 
 		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, proxiesInformation));
