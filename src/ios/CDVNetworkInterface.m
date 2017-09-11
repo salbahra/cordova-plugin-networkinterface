@@ -50,13 +50,83 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (NSString*) getProxyType:(NSString*)cfProxyType
+{
+    NSString* proxyType =  @"DIRECT";
+    
+    if ([cfProxyType isEqualToString:@"kCFProxyTypeAutoConfigurationURL"])
+    {
+        proxyType = @"AUTOCONFIG";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeHTTP"])
+    {
+        proxyType = @"HTTP";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeHTTPS"])
+    {
+        proxyType = @"HTTP";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeAutoConfigurationJavaScript"])
+    {
+        proxyType = @"AUTOJS";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeFTP"])
+    {
+        proxyType = @"FTP";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeSOCKS"])
+    {
+        proxyType = @"SOCKS";
+    }
+    
+    return proxyType;
+}
+
+- (NSObject*) createProxyInformation:(NSDictionary*)proxy
+{
+    NSString *cfProxyType = proxy[@"kCFProxyTypeKey"];
+    NSString *proxyType = [self getProxyType:cfProxyType];
+    NSString *host = @"none";
+    NSString *port = @"none";
+    
+    if (![proxyType isEqualToString:@"DIRECT"] && ![proxyType isEqualToString:@"AUTOCONFIG"])
+    {
+        host = proxy[@"kCFProxyHostNameKey"];
+        port = proxy[@"kCFProxyPortNumberKey"];
+    }
+    
+    return @{
+             @"type": proxyType,
+             @"host": host,
+             @"port": port
+             };
+}
+
+- (NSArray*) createProxiesArray:(NSArray*)proxies
+{
+    NSMutableArray *returnArray = [NSMutableArray arrayWithCapacity:[proxies count]];
+    if([proxies count] < 1)
+    {
+        [returnArray addObject: @{
+                                  @"type": @"DIRECT",
+                                  @"host": @"none",
+                                  @"port": @"none"
+                                  }];
+    }
+    else
+    {
+        NSDictionary *proxyInfo = [proxies objectAtIndex:0];
+        [returnArray addObject: [self createProxyInformation:proxyInfo]];
+    }
+    return [returnArray copy];
+}
+
 //******************************************************
 // Methods declared in header
 //******************************************************
 
 - (void) getWiFiIPAddress:(CDVInvokedUrlCommand*)command
 {
-    NSLog(@"getWiFiIPAddress start");
     //en0 is the interface for Wifi on iPhone
     NSArray* ipinfo = [self getInterfaceiIP:@"en0"];
     [self respondWithIPAddress:command ipinfo:ipinfo];
@@ -64,7 +134,6 @@
 
 - (void) getCarrierIPAddress:(CDVInvokedUrlCommand*)command
 {
-    NSLog(@"getCarrierIPAddress");
     //pdp_ip0 is the interface for Carrier Connection on iPhone
     NSArray *ipinfo = [self getInterfaceiIP:@"pdp_ip0"];
     [self respondWithIPAddress:command ipinfo:ipinfo];
@@ -72,31 +141,28 @@
 
 - (void) getHttpProxyInformation: (CDVInvokedUrlCommand*)command
 {
-    NSLog(@"getHttpProxyInformation start");
+    CDVPluginResult* pluginResult = nil;
 
-    //TODO: handle missing URL...
-    NSString *url = [command.arguments objectAtIndex: 0];
-    CFDictionaryRef proxySettingsRef =CFNetworkCopySystemProxySettings();
-    CFURLRef urlRef = (__bridge CFURLRef)[NSURL fileURLWithPath:url];
-
-    CFArrayRef proxiesRef = CFNetworkCopyProxiesForURL(urlRef, proxySettingsRef);
-    NSArray *proxies = (__bridge NSArray*)proxiesRef;
+    if([command.arguments count] > 0)
+    {
+        NSString *url = [command.arguments objectAtIndex: 0];
+        
+        CFDictionaryRef proxySettingsRef =CFNetworkCopySystemProxySettings();
+        CFURLRef urlRef = (__bridge CFURLRef)[NSURL URLWithString:url];
+        CFArrayRef proxiesRef = CFNetworkCopyProxiesForURL(urlRef, proxySettingsRef);
+        NSArray *proxies = [self createProxiesArray:(__bridge NSArray*)proxiesRef];
     
-    //[CFRelease url];
-    //[CFRelease proxies];
-    // If you create an object (either directly or by making a copy of another object—see The Create Rule), you own it.
-    // If you get an object from somewhere else, you do not own it. If you want to prevent it being disposed of, you must add yourself as an owner (using CFRetain).
-    // If you are an owner of an object, you must relinquish ownership when you have finished using it (using CFRelease).
+        CFRelease(proxySettingsRef);
+        CFRelease(proxiesRef);
+        
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: proxies];
+    } 
+    else 
+    {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No URL Specified"];
+    }
 
-
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: proxies];
-
-    //qCDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: command.arguments];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    NSLog(@"getHttpProxyInformation end");
-
-    CFRelease(proxySettingsRef);
-    //CFRelease(proxiesRef);
 }
 
 @end
