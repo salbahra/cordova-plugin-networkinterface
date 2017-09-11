@@ -89,7 +89,7 @@
     NSString *host = @"none";
     NSString *port = @"none";
     
-    if (![proxyType isEqualToString:@"DIRECT"] && ![proxyType isEqualToString:@"AUTOCONFIG"])
+    if (![proxyType isEqualToString:@"DIRECT"] && ![proxyType isEqualToString:@"AUTOCONFIG"] && ![proxyType isEqualToString:@"AUTOJS"])
     {
         host = proxy[@"kCFProxyHostNameKey"];
         port = proxy[@"kCFProxyPortNumberKey"];
