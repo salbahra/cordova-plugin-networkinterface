@@ -5,54 +5,67 @@ Network interface information plugin for Cordova/PhoneGap that supports Android,
 
 ## Command Line Install
 
-    cordova plugin add cordova-plugin-networkinterface
+    cordova plugin add https://github.com/tombolaltd/cordova-plugin-networkinterface.git
 
 ## PhoneGap Build
 
 To include the Network Interface plugin in your PhoneGap Build application, add this to your config.xml:
 
-    <plugin name="cordova-plugin-networkinterface" source="npm" />
+    <plugin name="cordova-plugin-networkinterface" source="npm" spec="https://github.com/tombolaltd/cordova-plugin-networkinterface.git"/>
 
 ## Usage
 
-The plugin creates the object `networkinterface` with the methods:
+The plugin creates the object `networkinterface`, with the following methods:
+
 * getWiFiIPAddress(onSuccess, onError)
 * getCarrierIPAddress(onSuccess, onError)
-* getIPAddress(onSuccess, onError)
-  * *This method is deprecated and uses the `getWiFiIPAddress` method.*
+* getHttpProxyInformation (url, onSuccess, onError)
 
-The onSuccess() callback is provided with two values: 
+### Using getWiFiIPAddress and getCarrierIPAddress
+The onSuccess() callback has been changed from the forked repo to a single object (there were problems getting the subnet), with properties `ip` and `subnet`. The onError() callback is provided with a single value:
 
 ```javascript
-function onSuccess(ip, subnet) {
-	// Note: Subnet is only supported for iOS and Android currently
+function onSuccess(ipInformation) {
+	alert('IP: ' + ipInformation.ip + ' subnet:' + ipInformation.subnet); 
 }
-```
 
-The onError() callback is provided with a single value:
+function onError(error) {
+    // Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
+    alert(error);
+}
+
+networkinterface.getWiFiIPAddress(onSuccess, onError);
+networkinterface.getCarrierIPAddress(onSuccess, onError);
+```
+### Using getHttpProxyInformation
+This function gets the relevant proxies for the passed URL in order of application. `onSuccess` we will get an array of objects, each having a `type`, `host` and `port` property. Where the url is not passed via a proxy, the `type` is "DIRECT" and both the host and port properties are set to "none"
 
 ```javascript
-// Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
-function onError(error) {}
+var url='www.github.com'; //The Url you want to find out the proxies for.
+
+function onSuccess(proxyInformation) {
+    proxyInformation.forEach(function(proxy){
+        alert('Type:' +proxy.type + ' Host:' + proxy.host + ' Port:' + proxt.port);
+    });
+}
+
+function onError(error) {
+    // Note: onSuccess() will be called where there is no applicable proxy, not onError.
+    alert(error);
+}
+
+networkinterface.getHttpProxyInformation(url, resolve, reject);
+
 ```
 
-Example:
+The type can be any of the following:
+* DIRECT - Not passing through a proxy. `host`/`port` values will be "none"
+* SOCKS
+* HTTP
+* HTTPS - iOS Only, seems to default back to HTTP
+* AUTOJS - iOS Only, proxy determined by AutoConfiguration Script. `host`/`port` values will be "none"
+* AUTOCONFIG - iOS Only, proxy determined by configuration at a URK `host`/`port` values will be "none"
 
-```javascript
-networkinterface.getWiFiIPAddress(function (ip) { alert(ip); });
-networkinterface.getCarrierIPAddress(function (ip) { alert(ip); });
-
-// With subnet and error handler
-networkinterface.getWiFiIPAddress(
-    function(ip, subnet) { alert(ip + ":" + subnet); }, 
-    function(err) { alert("Err: " + err); }
-);
-```
-
-## TODO
-
-* getCarrierIPAddress() is currently supported on iOS and Android only, need to add Blackberry 10, Browser, and Windows Phone 8 support
-* getSSID() is currently written in branch [ssid](https://github.com/salbahra/cordova-plugin-networkinterface/tree/ssid) but is untested on all platforms and therefore not merged
 
 ## License
 
