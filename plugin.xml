@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-networkinterface"
-    version="1.2.0">
+    version="1.0.0">
 
     <name>NetworkInterface</name>
     <description>
@@ -12,7 +12,7 @@
 
     <license>MIT</license>
 
-    <keywords>local,ip,wifi,network</keywords>
+    <keywords>local,ip,wifi,network,proxy</keywords>
 
 	<engines>
 		<engine name="cordova" version="&gt;=3.1.0" />
@@ -37,7 +37,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="networkinterface">
-                <param name="android-package" value="com.albahra.plugin.networkinterface.networkinterface"/>
+                <param name="android-package" value="com.tombola.plugin.networkinterface.networkinterface"/>
             </feature>
         </config-file>
 
@@ -45,6 +45,6 @@
             <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
         </config-file>
 
-        <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />
+        <source-file src="src/android/networkinterface.java" target-dir="src/com/tombola/plugin/networkinterface" />
     </platform>
 </plugin>
