@@ -7,5 +7,6 @@
 
 - (void) getWiFiIPAddress:(CDVInvokedUrlCommand*)command;
 - (void) getCarrierIPAddress:(CDVInvokedUrlCommand*)command;
+- (void) getHttpProxyInformation:(CDVInvokedUrlCommand*)command;
 
 @end
