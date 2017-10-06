@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-networkinterface",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This plugin allows your application to retrieve the local wifi address and http proxy information.",
   "cordova": {
     "id": "cordova-plugin-networkinterface",
@@ -29,7 +29,7 @@
       "version": ">=3.1.0"
     }
   ],
-  "author": "Samer Albahra",
+  "author": "Samer Albahra, tombolaLtd",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tombola/cordova-plugin-networkinterface/issues"
