@@ -2,97 +2,164 @@
 
 @implementation CDVNetworkInterface
 
-- (NSArray *)getWiFiIP {
-
+- (NSArray *)getInterfaceiIP:(NSString *)interfaceName  {
     NSString *address = @"error";
     NSString *subnet = @"error";
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
-    int success = 0;
-    // retrieve the current interfaces - returns 0 on success
-    success = getifaddrs(&interfaces);
-    if (success == 0) {
-        // Loop through linked list of interfaces
-        temp_addr = interfaces;
-        while(temp_addr != NULL) {
-            if(temp_addr->ifa_addr->sa_family == AF_INET) {
-                // Check if interface is en0 which is the wifi connection on the iPhone
-                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
-                    // Get NSString from C String
-                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                    subnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
-                }
 
-            }
-
-            temp_addr = temp_addr->ifa_next;
-        }
-    }
-    // Free memory
-    freeifaddrs(interfaces);
-    return (NSArray*)@[address, subnet];
-}
-
-- (NSArray *)getCarrierIP {
-    struct ifaddrs *interfaces = NULL;
-    struct ifaddrs *temp_addr = NULL;
-    NSString *cellAddress = @"error";
-    NSString *cellSubnet = @"error";
-
-    // retrieve the current interfaces - returns 0 on success
-    if(!getifaddrs(&interfaces)) {
+    int ifAddrsGetResultSuccess = getifaddrs(&interfaces); // retrieve current interfaces, returns 0 on success
+    
+    if (ifAddrsGetResultSuccess == 0) {
         // Loop through linked list of interfaces
         temp_addr = interfaces;
         while(temp_addr != NULL) {
             sa_family_t sa_type = temp_addr->ifa_addr->sa_family;
             if(sa_type == AF_INET || sa_type == AF_INET6) {
-                NSString *name = [NSString stringWithUTF8String:temp_addr->ifa_name];
-                NSString *addr = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)]; // pdp_ip0
-                //NSLog(@"NAME: \"%@\" addr: %@", name, addr); // see for yourself
-
-                if([name isEqualToString:@"pdp_ip0"] && ![addr isEqualToString:@"0.0.0.0"]) {
-                    // Interface is the cell connection on the iPhone
-                    cellAddress = addr;
-                    cellSubnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
+                NSString *addr = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                NSString* name = [NSString stringWithUTF8String:temp_addr->ifa_name];
+                // Check if interface the one we actually want to get the value for...
+                if([name isEqualToString:interfaceName]) {
+                    // Get NSString from C String
+                    address = addr;
+                    subnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
                 }
             }
+
             temp_addr = temp_addr->ifa_next;
         }
         // Free memory
         freeifaddrs(interfaces);
     }
 
-    return (NSArray *)@[cellAddress, cellSubnet];
+    return (NSArray*)@[address, subnet];
 }
 
-
-- (void) getWiFiIPAddress:(CDVInvokedUrlCommand*)command
+-(void) respondWithIPAddress:(CDVInvokedUrlCommand*)command ipinfo:(NSArray*)ipinfo
 {
     CDVPluginResult* pluginResult = nil;
-    NSArray* ipinfo = [self getWiFiIP];
     NSString* ipaddr = ipinfo[0];
     NSString* ipsubnet = ipinfo[1];
-    
+
     if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[ipaddr, ipsubnet]];
+        NSDictionary* result = @{ @"ip": ipaddr, @"subnet": ipsubnet};
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No valid IP address identified"];
     }
-
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (NSString*) getProxyType:(NSString*)cfProxyType
+{
+    NSString* proxyType =  @"DIRECT";
+    
+    if ([cfProxyType isEqualToString:@"kCFProxyTypeAutoConfigurationURL"])
+    {
+        proxyType = @"AUTOCONFIG";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeHTTP"])
+    {
+        proxyType = @"HTTP";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeHTTPS"])
+    {
+        proxyType = @"HTTP";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeAutoConfigurationJavaScript"])
+    {
+        proxyType = @"AUTOJS";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeFTP"])
+    {
+        proxyType = @"FTP";
+    }
+    else if ([cfProxyType isEqualToString:@"kCFProxyTypeSOCKS"])
+    {
+        proxyType = @"SOCKS";
+    }
+    
+    return proxyType;
+}
+
+- (NSObject*) createProxyInformation:(NSDictionary*)proxy
+{
+    NSString *cfProxyType = proxy[@"kCFProxyTypeKey"];
+    NSString *proxyType = [self getProxyType:cfProxyType];
+    NSString *host = @"none";
+    NSString *port = @"none";
+    
+    if (![proxyType isEqualToString:@"DIRECT"] && ![proxyType isEqualToString:@"AUTOCONFIG"] && ![proxyType isEqualToString:@"AUTOJS"])
+    {
+        host = proxy[@"kCFProxyHostNameKey"];
+        port = proxy[@"kCFProxyPortNumberKey"];
+    }
+    
+    return @{
+             @"type": proxyType,
+             @"host": host,
+             @"port": port
+             };
+}
+
+- (NSArray*) createProxiesArray:(NSArray*)proxies
+{
+    NSMutableArray *returnArray = [NSMutableArray arrayWithCapacity:[proxies count]];
+    if([proxies count] < 1)
+    {
+        [returnArray addObject: @{
+                                  @"type": @"DIRECT",
+                                  @"host": @"none",
+                                  @"port": @"none"
+                                  }];
+    }
+    else
+    {
+        NSDictionary *proxyInfo = [proxies objectAtIndex:0];
+        [returnArray addObject: [self createProxyInformation:proxyInfo]];
+    }
+    return [returnArray copy];
+}
+
+//******************************************************
+// Methods declared in header
+//******************************************************
+
+- (void) getWiFiIPAddress:(CDVInvokedUrlCommand*)command
+{
+    //en0 is the interface for Wifi on iPhone
+    NSArray* ipinfo = [self getInterfaceiIP:@"en0"];
+    [self respondWithIPAddress:command ipinfo:ipinfo];
 }
 
 - (void) getCarrierIPAddress:(CDVInvokedUrlCommand*)command
 {
+    //pdp_ip0 is the interface for Carrier Connection on iPhone
+    NSArray *ipinfo = [self getInterfaceiIP:@"pdp_ip0"];
+    [self respondWithIPAddress:command ipinfo:ipinfo];
+}
+
+- (void) getHttpProxyInformation: (CDVInvokedUrlCommand*)command
+{
     CDVPluginResult* pluginResult = nil;
-    NSArray *ipinfo = [self getCarrierIP];
-    NSString *ipaddr = ipinfo[0];
-    NSString *ipsubnet = ipinfo[1];
+
+    if([command.arguments count] > 0)
+    {
+        NSString *url = [command.arguments objectAtIndex: 0];
+        
+        CFDictionaryRef proxySettingsRef =CFNetworkCopySystemProxySettings();
+        CFURLRef urlRef = (__bridge CFURLRef)[NSURL URLWithString:url];
+        CFArrayRef proxiesRef = CFNetworkCopyProxiesForURL(urlRef, proxySettingsRef);
+        NSArray *proxies = [self createProxiesArray:(__bridge NSArray*)proxiesRef];
     
-    if (ipaddr != nil && ![ipaddr isEqualToString:@"error"]) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsMultipart:@[ipaddr, ipsubnet]];
-    } else {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No valid IP address identified"];
+        CFRelease(proxySettingsRef);
+        CFRelease(proxiesRef);
+        
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray: proxies];
+    } 
+    else 
+    {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No URL Specified"];
     }
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

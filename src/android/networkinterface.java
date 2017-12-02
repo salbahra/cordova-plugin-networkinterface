@@ -1,4 +1,4 @@
-package com.albahra.plugin.networkinterface;
+package com.tombola.plugin.networkinterface;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -7,6 +7,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.net.wifi.WifiInfo;
@@ -15,58 +16,98 @@ import android.util.Log;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.Proxy.Type;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Enumeration;
 import java.util.logging.*;
 
 public class networkinterface extends CordovaPlugin {
 	public static final String GET__WIFI_IP_ADDRESS="getWiFiIPAddress";
 	public static final String GET_CARRIER_IP_ADDRESS="getCarrierIPAddress";
+	public static final String GET_HTTP_PROXY_INFORMATION="getHttpProxyInformation";
 	private static final String TAG = "cordova-plugin-networkinterface";
+
+	
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		try {
 			if (GET__WIFI_IP_ADDRESS.equals(action)) {
-				String[] ipInfo = getWiFiIPAddress();
-				String ip = ipInfo[0];
-				String subnet = ipInfo[1];
-				String fail = "0.0.0.0";
-				if (ip == null || ip.equals(fail)) {
-					callbackContext.error("No valid IP address identified");
-					return false;
-				}
-				List<PluginResult> result = new ArrayList<PluginResult>();
-				result.add(new PluginResult(PluginResult.Status.OK, ip));
-				result.add(new PluginResult(PluginResult.Status.OK, subnet));
-				callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
-				return true;
+				return extractIpInfo(getWiFiIPAddress(), callbackContext);
 			} else if (GET_CARRIER_IP_ADDRESS.equals(action)) {
-				String[] ipInfo = getCarrierIPAddress();
-				String ip = ipInfo[0];
-				String subnet = ipInfo[1];
-				String fail = "0.0.0.0";
-				if (ip == null || ip.equals(fail)) {
-					callbackContext.error("No valid IP address identified");
-					return false;
-				}
-				List<PluginResult> result = new ArrayList<PluginResult>();
-				result.add(new PluginResult(PluginResult.Status.OK, ip));
-				result.add(new PluginResult(PluginResult.Status.OK, subnet));
-				callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
-				return true;
+				return extractIpInfo(getCarrierIPAddress(), callbackContext);
+			} else if(GET_HTTP_PROXY_INFORMATION.equals(action)) {
+				return getHttpProxyInformation(args.getString(0), callbackContext);
 			}
 			callbackContext.error("Error no such method '" + action + "'");
 			return false;
 		} catch(Exception e) {
-			callbackContext.error("Error while retrieving the IP address. " + e.getMessage());
+			callbackContext.error("Error while calling ''" + action + "' '" + e.getMessage());
 			return false;
 		}
+	}
+
+	private JSONObject createProxyInformation (Proxy.Type proxyType, String host, String port) throws JSONException {
+		JSONObject proxyInformation = new JSONObject();
+		proxyInformation.put("type", proxyType.toString());
+		proxyInformation.put("host", host);
+		proxyInformation.put("port", port);
+		return proxyInformation;
+	}
+
+	private boolean getHttpProxyInformation(String url, CallbackContext callbackContext) throws JSONException, URISyntaxException {
+		JSONArray proxiesInformation = new JSONArray();
+		ProxySelector defaultProxySelector = ProxySelector.getDefault();
+		
+		if(defaultProxySelector != null){
+			List<java.net.Proxy> proxyList = defaultProxySelector.select(new URI(url));
+			for(java.net.Proxy proxy: proxyList){
+				if (java.net.Proxy.Type.DIRECT.equals(proxy.type())) {
+                	break;
+            	}
+				InetSocketAddress proxyAddress = (InetSocketAddress)proxy.address();
+				if(proxyAddress != null){
+					proxiesInformation.put(createProxyInformation(proxy.type(), proxyAddress.getHostString(), String.valueOf(proxyAddress.getPort())));
+				}
+			}
+		}
+
+		if(proxiesInformation.length() < 1){
+			proxiesInformation.put(createProxyInformation(Proxy.Type.DIRECT, "none", "none"));
+		}
+
+		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, proxiesInformation));
+		return true;
+	}
+
+	private boolean extractIpInfo(String[] ipInfo, CallbackContext callbackContext) throws JSONException {
+		String ip = ipInfo[0];
+		String subnet = ipInfo[1];
+		String fail = "0.0.0.0";
+		if (ip == null || ip.equals(fail)) {
+			callbackContext.error("No valid IP address identified");
+			return false;
+		}
+
+		Map<String,String> ipInformation = new HashMap<String,String>();
+		ipInformation.put("ip", ip);
+		ipInformation.put("subnet", subnet);
+
+		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, new JSONObject(ipInformation)));
+		return true;
 	}
 
 	private String[] getWiFiIPAddress() {
