@@ -5,57 +5,91 @@ Network interface information plugin for Cordova/PhoneGap that supports Android,
 
 ## Command Line Install
 
-    cordova plugin add https://github.com/tombolaltd/cordova-plugin-networkinterface.git
+    cordova plugin add cordova-plugin-networkinterface
 
 ## PhoneGap Build
 
 To include the Network Interface plugin in your PhoneGap Build application, add this to your config.xml:
 
-    <plugin name="cordova-plugin-networkinterface" source="npm" spec="https://github.com/tombolaltd/cordova-plugin-networkinterface.git"/>
+    <plugin name="cordova-plugin-networkinterface" source="npm" />
 
-## Usage
+## Ionic 2+ (w/ Typescript) Usage
 
-The plugin creates the object `networkinterface`, with the following methods:
+First install the wrapper:
+
+```sh
+npm install @ionic-native/network-interface
+```
+
+Define it in your modules:
+
+```ts
+import { NetworkInterface } from '@ionic-native/network-interface';
+
+@NgModule( {
+    ...
+    providers: [
+        NetworkInterface
+    ],
+} )
+```
+
+Then use it as follows:
+
+```ts
+import { NetworkInterface } from '@ionic-native/network-interface';
+
+constructor( private networkInterface: NetworkInterface ) {
+    this.networkInterface.getWiFiIPAddress( ip => alert( ip ) );
+    this.networkInterface.getCarrierIPAddress( ip => alert( ip ) );
+}
+```
+
+## Global Usage
+
+The plugin creates the global object `networkinterface`, with the following methods:
 
 * getWiFiIPAddress(onSuccess, onError)
 * getCarrierIPAddress(onSuccess, onError)
 * getHttpProxyInformation (url, onSuccess, onError)
 
 ### Using getWiFiIPAddress and getCarrierIPAddress
-The onSuccess() callback has been changed from the forked repo to a single object (there were problems getting the subnet), with properties `ip` and `subnet`. The onError() callback is provided with a single value:
+The onSuccess() callback has one argument object with the properties `ip` and `subnet` (changed in 2.x). The onError() callback is provided with a single value describing the error.
 
 ```javascript
-function onSuccess(ipInformation) {
-	alert('IP: ' + ipInformation.ip + ' subnet:' + ipInformation.subnet); 
+function onSuccess( ipInformation ) {
+    alert( "IP: " + ipInformation.ip + " subnet:" + ipInformation.subnet );
 }
 
-function onError(error) {
+function onError( error ) {
+
     // Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
-    alert(error);
+    alert( error );
 }
 
-networkinterface.getWiFiIPAddress(onSuccess, onError);
-networkinterface.getCarrierIPAddress(onSuccess, onError);
+networkinterface.getWiFiIPAddress( onSuccess, onError );
+networkinterface.getCarrierIPAddress( onSuccess, onError );
 ```
+
 ### Using getHttpProxyInformation
 This function gets the relevant proxies for the passed URL in order of application. `onSuccess` we will get an array of objects, each having a `type`, `host` and `port` property. Where the url is not passed via a proxy, the `type` is "DIRECT" and both the host and port properties are set to "none"
 
 ```javascript
-var url='www.github.com'; //The Url you want to find out the proxies for.
+var url = "www.github.com"; //The url you want to find out the proxies for.
 
-function onSuccess(proxyInformation) {
-    proxyInformation.forEach(function(proxy){
-        alert('Type:' +proxy.type + ' Host:' + proxy.host + ' Port:' + proxt.port);
-    });
+function onSuccess( proxyInformation ) {
+    proxyInformation.forEach( function( proxy ) {
+        alert( "Type:" + proxy.type + " Host:" + proxy.host + " Port:" + proxt.port );
+    } );
 }
 
-function onError(error) {
+function onError( error ) {
+
     // Note: onSuccess() will be called where there is no applicable proxy, not onError.
-    alert(error);
+    alert( error );
 }
 
-networkinterface.getHttpProxyInformation(url, resolve, reject);
-
+networkinterface.getHttpProxyInformation( url, resolve, reject );
 ```
 
 The type can be any of the following:
@@ -65,7 +99,6 @@ The type can be any of the following:
 * HTTPS - iOS Only, seems to default back to HTTP
 * AUTOJS - iOS Only, proxy determined by AutoConfiguration Script. `host`/`port` values will be "none"
 * AUTOCONFIG - iOS Only, proxy determined by configuration at a URK `host`/`port` values will be "none"
-
 
 ## License
 

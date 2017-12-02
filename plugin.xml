@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-networkinterface"
-    version="1.0.1">
+    version="2.0.0">
 
     <name>NetworkInterface</name>
     <description>
@@ -38,7 +38,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="networkinterface">
-                <param name="android-package" value="com.tombola.plugin.networkinterface.networkinterface"/>
+                <param name="android-package" value="com.albahra.plugin.networkinterface.networkinterface"/>
             </feature>
         </config-file>
 
@@ -46,6 +46,32 @@
             <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
         </config-file>
 
-        <source-file src="src/android/networkinterface.java" target-dir="src/com/tombola/plugin/networkinterface" />
+        <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />
+    </platform>
+
+    <!-- windows -->
+    <platform name="windows">
+        <config-file target="config.xml" parent="/*">
+            <feature name="networkinterface">
+                <param name="windows-package" value="networkinterface"/>
+            </feature>
+        </config-file>
+
+        <js-module src="src/windows/networkinterfaceProxy.js" name="networkinterfaceProxy">
+            <runs />
+        </js-module>
+    </platform>
+
+    <!-- browser -->
+    <platform name="browser">
+        <config-file target="config.xml" parent="/*">
+            <feature name="networkinterface">
+                <param name="browser-package" value="networkinterface" />
+            </feature>
+        </config-file>
+
+        <js-module src="src/browser/networkinterfaceProxy.js" name="networkinterfaceProxy">
+            <runs />
+        </js-module>
     </platform>
 </plugin>

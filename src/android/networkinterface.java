@@ -1,4 +1,4 @@
-package com.tombola.plugin.networkinterface;
+package com.albahra.plugin.networkinterface;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
