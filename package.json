@@ -6,7 +6,9 @@
     "id": "cordova-plugin-networkinterface",
     "platforms": [
       "ios",
-      "android"
+      "android",
+      "browser",
+      "windows"
     ]
   },
   "repository": {
@@ -21,7 +23,9 @@
     "proxy",
     "ecosystem:cordova",
     "cordova-ios",
-    "cordova-android"
+    "cordova-android",
+    "cordova-browser",
+    "cordova-windows"
   ],
   "engines": [
     {
