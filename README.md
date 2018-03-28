@@ -1,7 +1,7 @@
 Network Interface
 =================
 
-Network interface information plugin for Cordova/PhoneGap that supports Android, Blackberry 10, Browser, iOS, and Windows Phone 8.
+Network interface information plugin for Cordova/PhoneGap that supports Android, Browser, iOS, and Windows 10.
 
 ## Command Line Install
 
@@ -13,46 +13,92 @@ To include the Network Interface plugin in your PhoneGap Build application, add 
 
     <plugin name="cordova-plugin-networkinterface" source="npm" />
 
-## Usage
+## Ionic 2+ (w/ Typescript) Usage
 
-The plugin creates the object `networkinterface` with the methods:
-* getWiFiIPAddress(onSuccess, onError)
-* getCarrierIPAddress(onSuccess, onError)
-* getIPAddress(onSuccess, onError)
-  * *This method is deprecated and uses the `getWiFiIPAddress` method.*
+First install the wrapper:
 
-The onSuccess() callback is provided with two values: 
+```sh
+npm install @ionic-native/network-interface
+```
 
-```javascript
-function onSuccess(ip, subnet) {
-	// Note: Subnet is only supported for iOS and Android currently
+Define it in your modules:
+
+```ts
+import { NetworkInterface } from '@ionic-native/network-interface';
+
+@NgModule( {
+    ...
+    providers: [
+        NetworkInterface
+    ],
+} )
+```
+
+Then use it as follows:
+
+```ts
+import { NetworkInterface } from '@ionic-native/network-interface';
+
+constructor( private networkInterface: NetworkInterface ) {
+    this.networkInterface.getWiFiIPAddress( ip => alert( ip ) );
+    this.networkInterface.getCarrierIPAddress( ip => alert( ip ) );
 }
 ```
 
-The onError() callback is provided with a single value:
+## Global Usage
+
+The plugin creates the global object `networkinterface`, with the following methods:
+
+* getWiFiIPAddress(onSuccess, onError)
+* getCarrierIPAddress(onSuccess, onError)
+* getHttpProxyInformation (url, onSuccess, onError)
+
+### Using getWiFiIPAddress and getCarrierIPAddress
+The onSuccess() callback has one argument object with the properties `ip` and `subnet` (changed in 2.x). The onError() callback is provided with a single value describing the error.
 
 ```javascript
-// Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
-function onError(error) {}
+function onSuccess( ipInformation ) {
+    alert( "IP: " + ipInformation.ip + " subnet:" + ipInformation.subnet );
+}
+
+function onError( error ) {
+
+    // Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
+    alert( error );
+}
+
+networkinterface.getWiFiIPAddress( onSuccess, onError );
+networkinterface.getCarrierIPAddress( onSuccess, onError );
 ```
 
-Example:
+### Using getHttpProxyInformation
+This function gets the relevant proxies for the passed URL in order of application. `onSuccess` we will get an array of objects, each having a `type`, `host` and `port` property. Where the url is not passed via a proxy, the `type` is "DIRECT" and both the host and port properties are set to "none"
 
 ```javascript
-networkinterface.getWiFiIPAddress(function (ip) { alert(ip); });
-networkinterface.getCarrierIPAddress(function (ip) { alert(ip); });
+var url = "www.github.com"; //The url you want to find out the proxies for.
 
-// With subnet and error handler
-networkinterface.getWiFiIPAddress(
-    function(ip, subnet) { alert(ip + ":" + subnet); }, 
-    function(err) { alert("Err: " + err); }
-);
+function onSuccess( proxyInformation ) {
+    proxyInformation.forEach( function( proxy ) {
+        alert( "Type:" + proxy.type + " Host:" + proxy.host + " Port:" + proxt.port );
+    } );
+}
+
+function onError( error ) {
+
+    // Note: onSuccess() will be called where there is no applicable proxy, not onError.
+    alert( error );
+}
+
+networkinterface.getHttpProxyInformation( url, resolve, reject );
 ```
 
-## TODO
-
-* getCarrierIPAddress() is currently supported on iOS and Android only, need to add Blackberry 10, Browser, and Windows Phone 8 support
-* getSSID() is currently written in branch [ssid](https://github.com/salbahra/cordova-plugin-networkinterface/tree/ssid) but is untested on all platforms and therefore not merged
+The type can be any of the following:
+* DIRECT - Not passing through a proxy. `host`/`port` values will be "none"
+* SOCKS
+* HTTP
+* HTTPS - iOS Only, seems to default back to HTTP
+* AUTOJS - iOS Only, proxy determined by AutoConfiguration Script. `host`/`port` values will be "none"
+* AUTOCONFIG - iOS Only, proxy determined by configuration at a URK `host`/`port` values will be "none"
 
 ## License
 

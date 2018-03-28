@@ -3,16 +3,16 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-networkinterface"
-    version="1.2.0">
+    version="2.0.0">
 
     <name>NetworkInterface</name>
     <description>
-    	This plugin allows your application to retrieve the local wifi address.
+    	This plugin allows your application to retrieve the local wifi address and proxy information.
 	</description>
 
     <license>MIT</license>
 
-    <keywords>local,ip,wifi,network</keywords>
+    <keywords>local,ip,wifi,network,proxy</keywords>
 
 	<engines>
 		<engine name="cordova" version="&gt;=3.1.0" />
@@ -33,7 +33,8 @@
         <header-file src="src/ios/CDVNetworkInterface.h" />
         <source-file src="src/ios/CDVNetworkInterface.m" />
     </platform>
-
+    
+    <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="networkinterface">
@@ -48,7 +49,7 @@
         <source-file src="src/android/networkinterface.java" target-dir="src/com/albahra/plugin/networkinterface" />
     </platform>
 
-
+    <!-- windows -->
     <platform name="windows">
         <config-file target="config.xml" parent="/*">
             <feature name="networkinterface">
@@ -61,24 +62,7 @@
         </js-module>
     </platform>
 
-
-    <platform name="wp8">
-        <config-file target="config.xml" parent="/*">
-            <feature name="networkinterface">
-                <param name="wp-package" value="networkinterface"/>
-            </feature>
-        </config-file>
-
-        <source-file src="src/wp8/networkinterface.cs" />
-    </platform>
-
-    <platform name="blackberry10">
-        <source-file src="src/blackberry10/index.js" target-dir="networkinterface" />
-        <config-file target="www/config.xml" parent="/widget">
-            <feature name="com.albahra.plugin.networkinterface" value="com.albahra.plugin.networkinterface" />
-        </config-file>
-    </platform>
-
+    <!-- browser -->
     <platform name="browser">
         <config-file target="config.xml" parent="/*">
             <feature name="networkinterface">

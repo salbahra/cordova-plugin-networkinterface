@@ -1,14 +1,14 @@
 {
   "name": "cordova-plugin-networkinterface",
-  "version": "1.2.0",
-  "description": "This plugin allows your application to retrieve the local wifi address.",
+  "version": "2.0.0",
+  "description": "This plugin allows your application to retrieve the local wifi address and http proxy information.",
   "cordova": {
     "id": "cordova-plugin-networkinterface",
     "platforms": [
       "ios",
       "android",
-      "wp8",
-      "blackberry10"
+      "browser",
+      "windows"
     ]
   },
   "repository": {
@@ -20,11 +20,12 @@
     "ip",
     "wifi",
     "network",
+    "proxy",
     "ecosystem:cordova",
     "cordova-ios",
     "cordova-android",
-    "cordova-wp8",
-    "cordova-blackberry10"
+    "cordova-browser",
+    "cordova-windows"
   ],
   "engines": [
     {
@@ -32,7 +33,7 @@
       "version": ">=3.1.0"
     }
   ],
-  "author": "Samer Albahra",
+  "author": "Samer Albahra, tombolaLtd",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/salbahra/cordova-plugin-networkinterface/issues"
