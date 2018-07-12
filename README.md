@@ -1,17 +1,20 @@
-Network Interface
-=================
+# Network Interface
 
 Network interface information plugin for Cordova/PhoneGap that supports Android, Browser, iOS, and Windows 10.
 
 ## Command Line Install
 
-    cordova plugin add cordova-plugin-networkinterface
+```sh
+cordova plugin add cordova-plugin-networkinterface
+```
 
 ## PhoneGap Build
 
 To include the Network Interface plugin in your PhoneGap Build application, add this to your config.xml:
 
-    <plugin name="cordova-plugin-networkinterface" source="npm" />
+```xml
+<plugin name="cordova-plugin-networkinterface" source="npm" />
+```
 
 ## Ionic 2+ (w/ Typescript) Usage
 
@@ -34,14 +37,25 @@ import { NetworkInterface } from '@ionic-native/network-interface';
 } )
 ```
 
-Then use it as follows:
+The Ionic wrapper functions return promises, so use them as follows:
 
-```ts
+```typescript
 import { NetworkInterface } from '@ionic-native/network-interface';
 
 constructor( private networkInterface: NetworkInterface ) {
-    this.networkInterface.getWiFiIPAddress( ip => alert( ip ) );
-    this.networkInterface.getCarrierIPAddress( ip => alert( ip ) );
+
+  this.networkInterface.getWiFiIPAddress()
+    .then(address => console.info(`IP: ${address.ip}, Subnet: ${address.subnet}`))
+    .catch(error => console.error(`Unable to get IP: ${error}`));
+
+  this.networkInterface.getCarrierIPAddress() {
+    .then(address => console.info(`IP: ${address.ip}, Subnet: ${address.subnet}`))
+    .catch(error => console.error(`Unable to get IP: ${error}`));
+
+  const url = 'www.github.com';
+  this.networkInterface.getHttpProxyInformation(url)
+    .then(proxy => console.info(`Type: ${proxy.type}, Host: ${proxy.host}, Port: ${proxy.port}`))
+    .catch(error => console.error(`Unable to get proxy info: ${error}`));
 }
 ```
 
@@ -54,17 +68,18 @@ The plugin creates the global object `networkinterface`, with the following meth
 * getHttpProxyInformation (url, onSuccess, onError)
 
 ### Using getWiFiIPAddress and getCarrierIPAddress
+
 The onSuccess() callback has one argument object with the properties `ip` and `subnet` (changed in 2.x). The onError() callback is provided with a single value describing the error.
 
 ```javascript
 function onSuccess( ipInformation ) {
-    alert( "IP: " + ipInformation.ip + " subnet:" + ipInformation.subnet );
+  alert( "IP: " + ipInformation.ip + " subnet:" + ipInformation.subnet );
 }
 
 function onError( error ) {
-
-    // Note: onError() will be called when an IP address can't be found. eg WiFi is disabled, no SIM card, Airplane mode etc.
-    alert( error );
+  // Note: onError() will be called when an IP address can't be
+  // found, e.g. WiFi is disabled, no SIM card, Airplane mode
+  alert( error );
 }
 
 networkinterface.getWiFiIPAddress( onSuccess, onError );
@@ -72,15 +87,17 @@ networkinterface.getCarrierIPAddress( onSuccess, onError );
 ```
 
 ### Using getHttpProxyInformation
+
 This function gets the relevant proxies for the passed URL in order of application. `onSuccess` we will get an array of objects, each having a `type`, `host` and `port` property. Where the url is not passed via a proxy, the `type` is "DIRECT" and both the host and port properties are set to "none"
 
 ```javascript
-var url = "www.github.com"; //The url you want to find out the proxies for.
+// The url you want to find out the proxies for.
+const url = 'www.github.com';
 
 function onSuccess( proxyInformation ) {
-    proxyInformation.forEach( function( proxy ) {
-        alert( "Type:" + proxy.type + " Host:" + proxy.host + " Port:" + proxt.port );
-    } );
+  proxyInformation.forEach( function( proxy ) {
+    alert( "Type:" + proxy.type + " Host:" + proxy.host + " Port:" + proxt.port );
+  });
 }
 
 function onError( error ) {
@@ -89,7 +106,7 @@ function onError( error ) {
     alert( error );
 }
 
-networkinterface.getHttpProxyInformation( url, resolve, reject );
+networkinterface.getHttpProxyInformation( url, onSuccess, onError );
 ```
 
 The type can be any of the following:
