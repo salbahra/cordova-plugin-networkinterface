@@ -15,9 +15,9 @@
         temp_addr = interfaces;
         while(temp_addr != NULL) {
             sa_family_t sa_type = temp_addr->ifa_addr->sa_family;
-            if(sa_type == AF_INET || sa_type == AF_INET6) {
+            if(sa_type == AF_INET) {
                 NSString *addr = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                NSString* name = [NSString stringWithUTF8String:temp_addr->ifa_name];
+                NSString *name = [NSString stringWithUTF8String:temp_addr->ifa_name];
                 // Check if interface the one we actually want to get the value for...
                 if([name isEqualToString:interfaceName]) {
                     // Get NSString from C String
