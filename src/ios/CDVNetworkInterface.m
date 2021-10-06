@@ -19,7 +19,7 @@
                 NSString *addr = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
                 NSString *name = [NSString stringWithUTF8String:temp_addr->ifa_name];
                 // Check if interface the one we actually want to get the value for...
-                if([name isEqualToString:interfaceName]) {
+                if([name isEqualToString:interfaceName] && ![addr isEqualToString:@"0.0.0.0"])
                     // Get NSString from C String
                     address = addr;
                     subnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
